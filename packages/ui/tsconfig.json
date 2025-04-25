@@ -1,0 +1,21 @@
+{
+  "extends": "../typescript-config/react-library.json",
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "ES2017"],
+    "jsx": "react-jsx",
+    "noEmit": false,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "tsBuildInfoFile": "./dist/.tsbuildinfo-ui",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["src/**/*", "src/**/*.json"],
+  "exclude": ["node_modules", "dist", ".turbo", "coverage"],
+  "references": [{ "path": "../hooks" }, { "path": "../api-client" }]
+}

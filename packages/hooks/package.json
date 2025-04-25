@@ -1,0 +1,45 @@
+{
+  "name": "@ezpg/hooks",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./useAuth": {
+      "types": "./dist/useAuth.d.ts",
+      "import": "./dist/useAuth.mjs",
+      "require": "./dist/useAuth.js"
+    }
+  },
+  "scripts": {
+    "build:js": "tsup",
+    "build:dts": "cat > dist/index.d.ts << 'EOF'\nexport enum AuthStatus {\n  Unauthenticated = \"unauthenticated\",\n  NeedsTfa = \"needs-tfa\",\n  NeedsPasswordChange = \"needs-password-change\",\n  Authenticated = \"authenticated\",\n  Unknown = \"unknown\",\n  Loading = \"loading\",\n}\n\ninterface AuthUserProfile {\n  userId: string;\n  username: string;\n  role: string;\n  tfaVerified: boolean;\n  firstLogin: boolean;\n  tfaEnabled: boolean;\n  isActive: boolean;\n  lastLoginAt?: Date | null;\n  createdAt: Date;\n  updatedAt: Date;\n}\n\nexport interface UseAuthReturn {\n  user: AuthUserProfile | null;\n  status: AuthStatus;\n  login: (credentials: any) => Promise<void>;\n  verifyTfa: (code: string) => Promise<void>;\n  setPasswordFirstLogin: (passwordsDto: any) => Promise<void>;\n  logout: () => Promise<void>;\n  isLoading: boolean;\n}\n\nexport declare const useAuth: () => UseAuthReturn;\nEOF",
+    "build": "yarn build:js && yarn build:dts",
+    "dev": "tsup --watch",
+    "lint": "eslint src/**/*.ts --max-warnings 0",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "dependencies": {
+    "@ezpg/api-client": "*",
+    "@ezpg/eslint-config": "*",
+    "@ezpg/database": "*",
+    "@ezpg/ui": "*"
+  },
+  "devDependencies": {
+    "@ezpg/eslint-config": "*",
+    "@ezpg/typescript-config": "*",
+    "@types/axios": "^0.14.4",
+    "tsup": "^8.0.2"
+  },
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

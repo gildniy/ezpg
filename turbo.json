@@ -1,0 +1,76 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "globalEnv": ["DATABASE_URL"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build", "^generate"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
+    "lint": {
+      "outputs": [],
+      "cache": true,
+      "inputs": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json"],
+      "env": ["ESLINT_FLAGS"],
+      "passThroughEnv": ["ESLINT_FLAGS"]
+    },
+    "dev": {
+      "dependsOn": ["migration:workflow"],
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false
+    },
+    "generate": {
+      "dependsOn": [],
+      "inputs": ["../../apps/server/swagger-spec.json"],
+      "cache": false,
+      "outputs": ["src/generated/**"]
+    },
+    "generate:api": {
+      "inputs": [
+        "packages/api-client/fix-duplicate-enums.js",
+        "apps/server/swagger-spec.json"
+      ],
+      "outputs": ["packages/api-client/src/generated/**"],
+      "cache": false
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:deploy": {
+      "cache": false
+    },
+    "db:reset": {
+      "cache": false,
+      "dependsOn": ["db:generate"],
+      "persistent": true,
+      "inputs": ["packages/database/reset-database.sh"]
+    },
+    "check-migrations": {
+      "cache": false
+    },
+    "check:migration": {
+      "cache": false
+    },
+    "prisma:migrate:reset": {
+      "cache": false,
+      "dependsOn": ["db:generate"],
+      "persistent": true,
+      "inputs": [
+        "packages/database/reset-database.sh",
+        "packages/database/prisma/schema.prisma",
+        "packages/database/prisma/seed.ts"
+      ]
+    },
+    "migration:workflow": {
+      "dependsOn": ["check:migration", "generate:api"],
+      "cache": false
+    }
+  }
+}

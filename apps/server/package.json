@@ -1,0 +1,61 @@
+{
+  "name": "@ezpg/server",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "start": "nest start",
+    "dev": "turbo run migration:workflow && turbo run generate:api && dotenv -e .env -- nodemon -L",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node ../../dist/apps/server/main.js",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" $ESLINT_FLAGS",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "db:reset-seed": "ts-node -r tsconfig-paths/register src/db-reset-seed.ts"
+  },
+  "dependencies": {
+    "@ezpg/api-client": "*",
+    "@ezpg/database": "*",
+    "@ezpg/eslint-config": "*",
+    "@ezpg/hooks": "*",
+    "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^11.1.1",
+    "@nestjs/serve-static": "^5.0.3",
+    "@types/csurf": "^1.11.5",
+    "@types/express": "^5.0.2",
+    "@types/passport-jwt": "^4.0.1",
+    "@types/speakeasy": "^2.0.10",
+    "cookie-parser": "^1.4.7",
+    "csurf": "^1.11.0",
+    "exceljs": "^4.4.0",
+    "express": "^5.1.0",
+    "nest-commander": "^3.17.0",
+    "otplib": "^12.0.1",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@repo/database$": "<rootDir>/auth/__mocks__/database"
+    }
+  }
+}

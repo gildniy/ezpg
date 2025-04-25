@@ -1,0 +1,12 @@
+{
+  "extends": "../typescript-config/library.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "baseUrl": ".",
+    "paths": {
+      "@ezpg/*": ["../*/src"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", ".turbo", "coverage"]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@ezpg/merchant",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ezpg/api-client": "*",
+    "@ezpg/eslint-config": "*",
+    "@ezpg/hooks": "*",
+    "@ezpg/types": "*",
+    "@tanstack/react-query": "^5.76.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2"
+  }
+}

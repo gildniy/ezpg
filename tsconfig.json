@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Workspace Root TypeScript Configuration",
+  "files": [],
+  "references": [
+    { "path": "./apps/admin" },
+    { "path": "./apps/merchant" },
+    { "path": "./apps/server" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/hooks" },
+    { "path": "./packages/helpers" },
+    { "path": "./packages/types" },
+    { "path": "./packages/database" },
+    { "path": "./packages/api-client" },
+    { "path": "./packages/config" }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@ezpg/server": ["./apps/server/src"],
+      "@ezpg/api-client": ["./packages/api-client/src"],
+      "@ezpg/config": ["./packages/config/src"],
+      "@ezpg/database": ["./packages/database/src"],
+      "@ezpg/helpers": ["./packages/helpers/src"],
+      "@ezpg/hooks": ["./packages/hooks/src"],
+      "@ezpg/types": ["./packages/types/src"],
+      "@ezpg/ui": ["./packages/ui/src"]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "extends": "@ezpg/typescript-config/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@ezpg/*": ["../../packages/*/src"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "../../packages/ui/src/contexts/language-context.tsx"
+  ]
+}

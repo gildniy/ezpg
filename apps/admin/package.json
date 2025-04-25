@@ -1,0 +1,20 @@
+{
+  "name": "@ezpg/admin",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ezpg/api-client": "*",
+    "@ezpg/eslint-config": "*",
+    "@ezpg/hooks": "*",
+    "@ezpg/types": "*",
+    "@ezpg/ui": "*",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2"
+  }
+}

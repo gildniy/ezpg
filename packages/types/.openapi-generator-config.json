@@ -1,0 +1,15 @@
+{
+  "inputSpec": "../apps/server/swagger-spec.json",
+  "generatorName": "typescript-axios",
+  "output": "./src/api-client",
+  "apiPackage": "api",
+  "modelPackage": "models",
+  "additionalProperties": {
+    "supportsES6": true,
+    "withSeparateModelsAndApi": true,
+    "withInterfaces": true,
+    "typescriptThreePlus": true,
+    "npmName": "@ezpg/types",
+    "npmVersion": "0.0.1"
+  }
+}

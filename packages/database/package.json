@@ -1,0 +1,51 @@
+{
+  "name": "@ezpg/database",
+  "version": "1.0.0",
+  "description": "Database package using Prisma",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "migrate:reset": "prisma migrate reset --force",
+    "studio": "prisma studio",
+    "lint": "eslint .",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "db:generate": "prisma generate",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:reset": "chmod +x ./reset-database.sh && ./reset-database.sh",
+    "seed": "tsx prisma/seed.ts",
+    "migration:create": "ts-node scripts/migrate.ts",
+    "check:migration": "ts-node scripts/check-migrations.ts",
+    "prisma:migrate:reset": "chmod +x ./reset-database.sh && ./reset-database.sh",
+    "migration:workflow": "yarn check:migration && cd ../.. && yarn generate:api"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ezpg/config": "*",
+    "@ezpg/helpers": "*",
+    "@ezpg/eslint-config": "*",
+    "@prisma/client": "^5.9.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/uuid": "^10.0.0"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.3.10",
+    "@nestjs/config": "^3.2.3"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma",
+    "seed": "ts-node ./prisma/seed.ts"
+  }
+}

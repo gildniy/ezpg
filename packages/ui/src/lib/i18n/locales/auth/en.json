@@ -1,0 +1,73 @@
+{
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Welcome back to {appName}",
+      "userId": {
+        "label": "User ID",
+        "placeholder": "Enter your user ID"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Enter your password"
+      },
+      "rememberMe": "Remember me",
+      "submit": "Sign In",
+      "error": {
+        "title": "Login Error",
+        "required": {
+          "userId": "User ID is required",
+          "password": "Password is required"
+        }
+      }
+    },
+    "tfa": {
+      "title": "Two-Factor Authentication",
+      "subtitle": "Enter the verification code from your authenticator app",
+      "code": {
+        "label": "Verification Code"
+      },
+      "submit": "Verify",
+      "error": {
+        "title": "Authentication Error",
+        "required": "Verification code is required",
+        "invalid": "Invalid verification code"
+      }
+    },
+    "changePassword": {
+      "title": "Change Password",
+      "subtitle": "You are required to change your password",
+      "newPassword": {
+        "label": "New Password",
+        "placeholder": "Enter new password"
+      },
+      "confirmPassword": {
+        "label": "Confirm Password",
+        "placeholder": "Confirm new password"
+      },
+      "submit": "Change Password",
+      "requirements": "Password must be at least 8 characters long",
+      "error": {
+        "title": "Password Change Error",
+        "required": {
+          "newPassword": "New password is required",
+          "confirmPassword": "Password confirmation is required"
+        },
+        "mismatch": "Passwords do not match",
+        "minLength": "Password must be at least 8 characters"
+      }
+    },
+    "common": {
+      "loading": "Loading...",
+      "error": {
+        "generic": "An error occurred. Please try again."
+      },
+      "footer": {
+        "copyright": "© {year} {appName}. All rights reserved.",
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "support": "Support"
+      }
+    }
+  }
+}

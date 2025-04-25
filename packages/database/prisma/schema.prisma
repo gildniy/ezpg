@@ -1,0 +1,619 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "darwin-arm64"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model MerchantTransactionUri {
+  merchant_id      String   @db.VarChar(8)
+  transaction_type String   @db.VarChar(1) // -- Example: 0
+  uri              String   @db.VarChar(500)
+  api_key          String   @db.VarChar(100)
+  use_yn           String?  @default("Y") @db.VarChar(1) // -- Example: Y = Enable, N = Disable
+  updated_at       DateTime @default(now())
+  updated_by       String   @db.VarChar(20)
+
+  @@id([merchant_id, transaction_type])
+}
+
+model MerchantWallet {
+  merchant_id                 String   @id @db.VarChar(8)
+  deposit_amount              BigInt   @default(0)
+  available_remittance_amount BigInt   @default(0)
+  reserve_amount              BigInt   @default(0)
+  updated_at                  DateTime @default(now())
+  updated_by                  String   @db.VarChar(20)
+}
+
+model MerchantTransactionInfo {
+  merchant_id             String   @id @db.VarChar(8)
+  settlement_type         String   @db.VarChar(1) // -- Example: 0 = Next day
+  deposit_van_id          String   @db.VarChar(1) // -- Example: 0 = Terraxis
+  remittance_van_id       String   @db.VarChar(1) // -- Example: 0 = Terraxis
+  max_limit_amount        BigInt   @default(0)
+  merchant_bank_code      String   @db.VarChar(3)
+  merchant_account_number String   @db.VarChar(16)
+  updated_at              DateTime @default(now())
+  updated_by              String   @db.VarChar(20)
+}
+
+model MerchantFee {
+  merchant_id                 String   @id @db.VarChar(8)
+  deposit_fee                 BigInt   @default(0)
+  deposit_fee_rate            Decimal  @default(0.00) @db.Decimal(5, 2)
+  remittance_fee              BigInt   @default(0)
+  remittance_fee_rate         Decimal  @default(0.00) @db.Decimal(5, 2)
+  foreign_remittance_fee_rate Decimal  @default(0.00) @db.Decimal(5, 2)
+  reserve_rate                Decimal  @default(0.00) @db.Decimal(5, 2)
+  updated_at                  DateTime @default(now())
+  updated_by                  String   @db.VarChar(20)
+}
+
+model RemittanceSummary {
+  transaction_date        String   @db.VarChar(8)
+  merchant_id             String   @db.VarChar(8)
+  remittance_count        Int      @default(0)
+  remittance_amount       BigInt   @default(0)
+  gross_remittance_amount BigInt   @default(0)
+  updated_at              DateTime @default(now())
+  updated_by              String?  @db.VarChar(20)
+
+  @@id([transaction_date, merchant_id])
+}
+
+model Remittance {
+  transaction_date   String   @db.VarChar(8)
+  transaction_id     BigInt
+  van_id             String?  @db.VarChar(1) // -- Example: 0 = DOZN, 1 = BK
+  van_transaction_id String?  @db.VarChar(100)
+  merchant_id        String   @db.VarChar(8)
+  transaction_status String   @db.VarChar(1) // -- 0:PROCESSING, 1:SUCCESS, 2:FAILED
+  transaction_code   String?  @db.VarChar(4)
+  remittance_time    String?  @db.VarChar(6)
+  bank_code          String?  @db.VarChar(3)
+  account_number     String?  @db.VarChar(16)
+  remittance_amount  BigInt?
+  remittance_type    String?  @db.VarChar(10)
+  updated_at         DateTime @default(now())
+  updated_by         String?  @db.VarChar(20)
+
+  @@id([transaction_date, transaction_id])
+}
+
+model VirtualAccount {
+  bank_code        String   @db.VarChar(3)
+  account_number   String   @db.VarChar(16)
+  van_id           String   @db.VarChar(1) // 0:DOZN, 1:BK
+  merchant_id      String?  @db.VarChar(8)
+  issue_status     String?  @db.VarChar(1)
+  max_limit_amount BigInt?
+  user_name        String?  @db.VarChar(20)
+  updated_at       DateTime @default(now())
+  updated_by       String   @db.VarChar(20)
+
+  @@id([bank_code, account_number])
+  @@index([van_id, issue_status, updated_at], map: "idx1_virtual_account")
+}
+
+model Transaction {
+  transaction_date   String   @db.VarChar(8)
+  van_id             String   @db.VarChar(1)
+  van_transaction_id String   @db.VarChar(100)
+  merchant_id        String   @db.VarChar(8)
+  transaction_status String   @db.VarChar(1) // 0:WITHDRAWAL, 1:DEPOSIT, 2:CANCEL
+  issue_status       String   @db.VarChar(1)
+  deposit_time       String?  @db.VarChar(6)
+  cancel_time        String?  @db.VarChar(6)
+  bank_code          String?  @db.VarChar(3)
+  account_number     String?  @db.VarChar(16)
+  transaction_amount BigInt?
+  depositor_name     String?  @db.VarChar(30)
+  user_id            String?  @db.VarChar(30)
+  updated_at         DateTime @default(now())
+  updated_by         String   @db.VarChar(20)
+
+  @@id([transaction_date, van_id, van_transaction_id])
+}
+
+model TransactionSummary {
+  transaction_date   String   @db.VarChar(8)
+  merchant_id        String   @db.VarChar(8)
+  deposit_count      BigInt   @default(0)
+  deposit_amount     BigInt   @default(0)
+  net_deposit_amount BigInt   @default(0)
+  cancel_count       BigInt   @default(0)
+  cancel_amount      BigInt   @default(0)
+  net_cancel_amount  BigInt   @default(0)
+  updated_at         DateTime @default(now())
+  updated_by         String   @db.VarChar(20)
+
+  @@id([transaction_date, merchant_id])
+}
+
+model PendingDeliveryTransaction {
+  pending_delivery_transaction_id BigInt    @id
+  transaction_date                String    @db.VarChar(8)
+  van_id                          String    @db.VarChar(1)
+  van_transaction_id              String    @db.VarChar(100)
+  merchant_id                     String    @db.VarChar(8)
+  transaction_status              String    @db.VarChar(1)
+  deposit_time                    String?   @db.VarChar(6)
+  cancel_time                     String?   @db.VarChar(6)
+  bank_code                       String?   @db.VarChar(3)
+  account_number                  String?   @db.VarChar(16)
+  transaction_amount              BigInt?
+  depositor_name                  String?   @db.VarChar(30)
+  user_id                         String?   @db.VarChar(30)
+  scheduled_send_time             DateTime?
+  send_count                      BigInt    @default(0)
+  max_send_count                  BigInt    @default(10)
+  updated_at                      DateTime  @default(now())
+  updated_by                      String    @db.VarChar(20)
+}
+
+model PendingDeliveryRemittance {
+  transaction_date    String    @db.VarChar(8)
+  transaction_id      BigInt
+  van_id              String?   @db.VarChar(1)
+  van_transaction_id  String?   @db.VarChar(100)
+  merchant_id         String    @db.VarChar(8)
+  remittance_time     String?   @db.VarChar(6)
+  bank_code           String?   @db.VarChar(3)
+  account_number      String?   @db.VarChar(16)
+  remittance_amount   BigInt?
+  remittance_type     String?   @db.VarChar(10)
+  scheduled_send_time DateTime?
+  send_count          BigInt    @default(0)
+  max_send_count      BigInt    @default(10)
+  updated_at          DateTime  @default(now())
+  updated_by          String?   @db.VarChar(20)
+
+  @@id([transaction_date, transaction_id])
+}
+
+model Role {
+  role_id   Int      @id @default(autoincrement())
+  role_name RoleName @unique
+  users     User[]   @relation("RoleUsers")
+
+  @@map("roles")
+}
+
+model User {
+  user_id               String           @id @db.VarChar(8)
+  username              String           @unique @db.VarChar(50)
+  password_hash         String           @db.VarChar(255)
+  role_id               Int
+  tfa_secret            String?          @db.VarChar(255)
+  first_login           Boolean          @default(true)
+  is_active             Boolean          @default(true)
+  hashed_refresh_token  String?          @db.VarChar(255)
+  last_login_at         DateTime?        @db.Timestamptz(6)
+  created_at            DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime         @updatedAt @db.Timestamptz(6)
+  deleted_at            DateTime?        @db.Timestamptz(6)
+  admin                 Admin?           @relation("AdminUser")
+  agent                 Agent?           @relation("AgentUser")
+  created_agents        Agent[]          @relation("CreatorAgents")
+  balance_logs          BalanceLogs[]    @relation("UserBalanceLogs")
+  created_blacklists    Blacklist[]      @relation("CreatedBlacklists")
+  handled_complaints    CivilComplaint[] @relation("HandlerComplaints")
+  exportFiles           ExportFile[]     @relation("UserExportFiles")
+  logs                  Log[]            @relation("UserLogs")
+  created_groups        MerchantGroup[]  @relation("CreatorGroups")
+  created_merchants     Merchant[]       @relation("CreatorMerchants")
+  merchant              Merchant?        @relation("MerchantMerchantUser")
+  authored_notices      Notice[]         @relation("AuthoredNotices")
+  answered_qnas         Qna[]            @relation("ResponderQnas")
+  requested_qnas        Qna[]            @relation("RequesterQnas")
+  role                  Role             @relation("RoleUsers", fields: [role_id], references: [role_id])
+  processed_withdrawals Withdrawal[]     @relation("ProcessedWithdrawals")
+  requested_withdrawals Withdrawal[]     @relation("RequestedWithdrawals")
+
+  @@map("users")
+}
+
+model Merchant {
+  merchant_id  String @id @db.VarChar(8)
+  affiliate    String @db.VarChar(100)
+  company_name String @db.VarChar(100)
+  telegram_id  String @db.VarChar(100)
+  group_id     Int
+  created_by   String @db.VarChar(8)
+
+  // Transaction limits
+  virtual_account_limit          Int    @default(0)
+  virtual_account_deposit_limit  BigInt @default(0)
+  max_deposit_per_transaction    BigInt @default(0)
+  max_daily_deposit              BigInt @default(0)
+  max_withdrawal_per_transaction BigInt @default(0)
+  max_daily_withdrawal           BigInt @default(0)
+
+  // Other fields
+  balance                     Decimal @default(0.00) @db.Decimal(20, 2)
+  foreign_currency_fee_rate   Decimal @default(0.00) @db.Decimal(5, 2)
+  settlement_fee_rate         Decimal @default(0.00) @db.Decimal(5, 2)
+  settlement_fee              BigInt  @default(0)
+  foreign_bank_name           String? @db.VarChar(100)
+  foreign_bank_account_number String? @db.VarChar(50)
+  foreign_bank_account_holder String? @db.VarChar(100)
+
+  notification_types       NotificationType[] @default([PAYMENT_FAILED, SYSTEM_DOWN])
+  notification_time        NotificationTime   @default(TWENTY_FOUR_HOURS)
+  notification_time_custom String?            @db.VarChar(11)
+
+  callback_ip_address String?        @db.VarChar(45)
+  status              MerchantStatus @default(ACTIVE)
+  created_at          DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime       @updatedAt @db.Timestamptz(6)
+  deleted_at          DateTime?      @db.Timestamptz(6)
+  primary_bank_code   String?        @db.VarChar(10)
+  api_key             String         @unique @default(uuid())
+
+  agents           Agent[]          @relation("MerchantAgents")
+  civil_complaints CivilComplaint[] @relation("MerchantCivilComplaints")
+  creator          User             @relation("CreatorMerchants", fields: [created_by], references: [user_id])
+  group            MerchantGroup    @relation("MerchantGroupMerchants", fields: [group_id], references: [group_id])
+  user             User             @relation("MerchantMerchantUser", fields: [merchant_id], references: [user_id])
+  banks            MerchantBank[]   @relation("BankMerchants")
+
+  @@index([primary_bank_code])
+  @@map("merchants")
+}
+
+model MerchantBank {
+  id          Int      @id @default(autoincrement())
+  merchant_id String
+  bank_code   String
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  merchant Merchant @relation("BankMerchants", fields: [merchant_id], references: [merchant_id])
+  bank     Bank     @relation("BankMerchants", fields: [bank_code], references: [bank_code])
+}
+
+model Admin {
+  admin_id   String    @id @db.VarChar(8)
+  is_super   Boolean   @default(false)
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime  @updatedAt @db.Timestamptz(6)
+  deleted_at DateTime? @db.Timestamptz(6)
+  user       User      @relation("AdminUser", fields: [admin_id], references: [user_id])
+
+  @@map("admins")
+}
+
+model TransactionReference {
+  reference_id       Int           @id @default(autoincrement())
+  transaction_date   String        @db.VarChar(8)
+  van_id             String        @db.VarChar(1)
+  van_transaction_id String        @db.VarChar(20)
+  created_at         DateTime      @default(now()) @db.Timestamptz(6)
+  balance_logs       BalanceLogs[] @relation("TransactionReferenceBalanceLogs")
+
+  @@unique([transaction_date, van_id, van_transaction_id], name: "transaction_references_composite_key_unique")
+  @@index([van_transaction_id])
+  @@map("transaction_references")
+}
+
+model MerchantGroup {
+  group_id               Int                 @id @default(autoincrement())
+  group_name             String              @db.VarChar(100)
+  created_by             String              @db.VarChar(8)
+  status                 MerchantGroupStatus @default(ACTIVE)
+  created_at             DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime            @updatedAt @db.Timestamptz(6)
+  deleted_at             DateTime?           @db.Timestamptz(6)
+  is_permanently_deleted Boolean             @default(false)
+  creator                User                @relation("CreatorGroups", fields: [created_by], references: [user_id])
+  merchants              Merchant[]          @relation("MerchantGroupMerchants")
+
+  @@map("merchant_groups")
+}
+
+model Bank {
+  bank_code          String             @id @db.VarChar(10)
+  bank_name          String             @db.VarChar(100)
+  is_active          Boolean            @default(true)
+  created_at         DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime           @updatedAt @db.Timestamptz(6)
+  bank_code_mappings BankCodeMappings[] @relation("BankCodeMappings")
+  merchants          MerchantBank[]     @relation("BankMerchants")
+
+  @@map("banks")
+}
+
+model Agent {
+  agent_id                  String             @id @db.VarChar(8)
+  agent_name                String             @db.VarChar(100)
+  email                     String             @default("test@example.com") @db.VarChar(100)
+  phone                     String             @default("000-0000-0000") @db.VarChar(100)
+  commission_rate           Decimal            @default(0.00) @db.Decimal(5, 2)
+  mid                       String             @db.VarChar(100)
+  mkey                      String             @default(uuid())
+  callback_url              String?            @db.VarChar(255)
+  merchant_id               String?            @db.VarChar(8)
+  created_by                String             @db.VarChar(8)
+  balance                   Decimal            @default(0.00) @db.Decimal(20, 2)
+  withdrawal_bank_name      String?            @db.VarChar(100)
+  withdrawal_account_number String?            @db.VarChar(50)
+  withdrawal_account_holder String?            @db.VarChar(100)
+  telegram_id               String             @default("") @db.VarChar(100)
+  notification_types        NotificationType[] @default([PAYMENT_FAILED, SYSTEM_DOWN])
+  notification_time         NotificationTime   @default(TWENTY_FOUR_HOURS)
+  notification_time_custom  String?            @db.VarChar(11)
+  status                    AgentStatus        @default(ACTIVE)
+  created_at                DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at                DateTime           @updatedAt @db.Timestamptz(6)
+  deleted_at                DateTime?          @db.Timestamptz(6)
+  distribution_rate         Decimal            @default(0.00) @map("distribution_rate") @db.Decimal(5, 2)
+  is_permanently_deleted    Boolean            @default(false)
+  user                      User               @relation("AgentUser", fields: [agent_id], references: [user_id])
+  creator                   User               @relation("CreatorAgents", fields: [created_by], references: [user_id])
+  merchant                  Merchant?          @relation("MerchantAgents", fields: [merchant_id], references: [merchant_id])
+
+  @@map("agents")
+}
+
+model Withdrawal {
+  withdrawal_id   Int               @id @default(autoincrement())
+  user_id         String            @db.VarChar(8)
+  entity_type     EntityType        @default(MERCHANT)
+  entity_id       String            @db.VarChar(8)
+  amount          Decimal           @db.Decimal(20, 2)
+  bank_name       String            @db.VarChar(100)
+  account_number  String            @db.VarChar(50)
+  account_holder  String            @db.VarChar(100)
+  status          WithdrawalStatus  @default(PENDING)
+  requested_by    String            @db.VarChar(8)
+  requested_at    DateTime          @default(now()) @db.Timestamptz(6)
+  processed_by    String?           @db.VarChar(8)
+  processed_at    DateTime?         @db.Timestamptz(6)
+  processing_note String?           @db.VarChar(255)
+  account_date    DateTime?         @db.Timestamptz(6)
+  method          WithdrawalMethod?
+  balance_logs    BalanceLogs[]     @relation("WithdrawalBalanceLogs")
+  processor       User?             @relation("ProcessedWithdrawals", fields: [processed_by], references: [user_id])
+  requester       User              @relation("RequestedWithdrawals", fields: [requested_by], references: [user_id])
+
+  @@map("withdrawals")
+}
+
+model Notice {
+  notice_id      Int          @id @default(autoincrement())
+  author_user_id String       @db.VarChar(8)
+  title          String       @db.VarChar(255)
+  content        String
+  type           NoticeType?
+  status         NoticeStatus @default(PUBLISHED)
+  created_at     DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime     @updatedAt @db.Timestamptz(6)
+  author         User         @relation("AuthoredNotices", fields: [author_user_id], references: [user_id])
+
+  @@map("notices")
+}
+
+model Qna {
+  qna_id            Int       @id @default(autoincrement())
+  requester_user_id String    @db.VarChar(8)
+  subject           String    @db.VarChar(255)
+  question          String
+  answer            String?
+  status            QnaStatus @default(PENDING)
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  answered_by       String?   @db.VarChar(8)
+  answered_at       DateTime? @db.Timestamptz(6)
+  responder         User?     @relation("ResponderQnas", fields: [answered_by], references: [user_id])
+  requester         User      @relation("RequesterQnas", fields: [requester_user_id], references: [user_id])
+
+  @@map("qna")
+}
+
+model Log {
+  log_id             Int         @id @default(autoincrement())
+  user_id            String?     @db.VarChar(8)
+  action             String      @db.VarChar(255)
+  target_entity_type String?     @db.VarChar(50)
+  target_entity_id   String?
+  severity           LogSeverity @default(INFO)
+  details            Json?
+  ip_address         String?     @db.VarChar(45)
+  created_at         DateTime    @default(now()) @db.Timestamptz(6)
+  system_generated   Boolean     @default(false)
+  user               User?       @relation("UserLogs", fields: [user_id], references: [user_id])
+
+  @@map("logs")
+}
+
+model Blacklist {
+  blacklist_id Int           @id @default(autoincrement())
+  type         BlacklistType @default(IP)
+  value        String        @db.VarChar(255)
+  reason       String?
+  created_by   String        @db.VarChar(8)
+  created_at   DateTime      @default(now()) @db.Timestamptz(6)
+  creator      User          @relation("CreatedBlacklists", fields: [created_by], references: [user_id])
+
+  @@map("blacklist")
+}
+
+model CivilComplaint {
+  complaint_id           Int             @id @default(autoincrement())
+  merchant_id            String          @db.VarChar(8)
+  complainant_name       String?         @db.VarChar(100)
+  related_account_number String?         @db.VarChar(50)
+  amount_deducted        Decimal?        @db.Decimal(20, 2)
+  final_amount           Decimal?        @db.Decimal(20, 2)
+  details                String
+  status                 ComplaintStatus @default(PENDING)
+  created_by             String          @db.VarChar(8)
+  created_at             DateTime        @default(now()) @db.Timestamptz(6)
+  resolved_at            DateTime?       @db.Timestamptz(6)
+  handler                User            @relation("HandlerComplaints", fields: [created_by], references: [user_id])
+  merchants              Merchant        @relation("MerchantCivilComplaints", fields: [merchant_id], references: [merchant_id])
+
+  @@map("civil_complaints")
+}
+
+model ExportFile {
+  id         Int       @id @default(autoincrement())
+  filename   String    @unique
+  path       String
+  admin_id   String    @db.VarChar(8)
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  expires_at DateTime? @db.Timestamptz(6)
+  admin      User      @relation("UserExportFiles", fields: [admin_id], references: [user_id])
+
+  @@index([admin_id])
+  @@index([filename])
+  @@map("export_files")
+}
+
+model BalanceLogs {
+  log_id                   Int                   @id @default(autoincrement())
+  entity_type              EntityType            @default(MERCHANT)
+  entity_id                String
+  change_type              BalanceChangeType     @default(DEPOSIT_COMMISSION)
+  amount                   Decimal               @db.Decimal(20, 2)
+  balance_before           Decimal               @db.Decimal(20, 2)
+  balance_after            Decimal               @db.Decimal(20, 2)
+  related_transaction_id   String?               @db.VarChar(20)
+  transaction_reference_id Int?
+  related_withdrawal_id    Int?
+  created_by               String?               @db.VarChar(8)
+  notes                    String?
+  created_at               DateTime              @default(now()) @db.Timestamptz(6)
+  users                    User?                 @relation("UserBalanceLogs", fields: [created_by], references: [user_id])
+  withdrawals              Withdrawal?           @relation("WithdrawalBalanceLogs", fields: [related_withdrawal_id], references: [withdrawal_id])
+  transaction_reference    TransactionReference? @relation("TransactionReferenceBalanceLogs", fields: [transaction_reference_id], references: [reference_id])
+
+  @@index([entity_type, entity_id])
+  @@map("balance_logs")
+}
+
+model BankCodeMappings {
+  external_code String   @id @db.VarChar(10)
+  internal_code String   @db.VarChar(10)
+  external_name String?
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @db.Timestamptz(6)
+  banks         Bank     @relation("BankCodeMappings", fields: [internal_code], references: [bank_code], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([internal_code])
+}
+
+enum RoleName {
+  ADMIN
+  MERCHANT
+  AGENT
+}
+
+enum MerchantStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum AgentStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum WithdrawalMethod {
+  KRW_WITHDRAWAL
+  SETTLEMENT
+  FOREIGN_WITHDRAWAL
+}
+
+enum WithdrawalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+  FAILED
+}
+
+enum EntityType {
+  MERCHANT
+  AGENT
+  ADMIN
+}
+
+enum BalanceChangeType {
+  DEPOSIT_COMMISSION
+  WITHDRAWAL_REQUEST
+  WITHDRAWAL_COMPLETE
+  WITHDRAWAL_REJECT
+  WITHDRAWAL_REFUND
+  ADJUSTMENT_ADD
+  ADJUSTMENT_DEDUCT
+}
+
+enum NoticeType {
+  SYSTEM
+  NOTICE
+  UPDATE
+}
+
+enum NoticeStatus {
+  PUBLISHED
+  DRAFT
+}
+
+enum QnaStatus {
+  PENDING
+  ANSWERED
+}
+
+enum LogSeverity {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+}
+
+enum BlacklistType {
+  IP
+  ACCOUNT_NUMBER
+  USER_ID
+  BANK_ACCOUNT
+}
+
+enum ComplaintStatus {
+  PENDING
+  RESOLVED
+  REJECTED
+}
+
+enum MerchantBalanceChangeType {
+  DEPOSIT_COMMISSION
+  WITHDRAWAL_REQUEST
+  WITHDRAWAL_COMPLETE
+  WITHDRAWAL_REJECT
+  WITHDRAWAL_REFUND
+  ADJUSTMENT_ADD
+  ADJUSTMENT_DEDUCT
+}
+
+enum MerchantGroupStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum NotificationType {
+  PAYMENT_FAILED
+  SYSTEM_DOWN
+  API_ERROR
+  DATABASE_ERROR
+}
+
+enum NotificationTime {
+  TWENTY_FOUR_HOURS
+  BUSINESS_HOURS
+  CUSTOM
+}

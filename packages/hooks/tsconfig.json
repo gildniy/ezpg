@@ -1,0 +1,20 @@
+{
+  "extends": "../typescript-config/react-library.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    "baseUrl": ".",
+    "paths": {
+      "@ezpg/*": ["../*/src"],
+      "@prisma/client": ["../database/src/generated/client"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", ".turbo", "coverage"],
+  "references": [
+    { "path": "../api-client" },
+    { "path": "../config" },
+    { "path": "../database" },
+    { "path": "../ui" }
+  ]
+}

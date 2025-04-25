@@ -1,0 +1,41 @@
+{
+  "name": "@ezpg/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "description": "OpenAPI client for @ezpg/api-client",
+  "author": "OpenAPI-Generator Contributors",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GIT_USER_ID/GIT_REPO_ID.git"
+  },
+  "keywords": [
+    "axios",
+    "typescript",
+    "openapi-client",
+    "openapi-generator",
+    "@ezpg/api-client"
+  ],
+  "license": "Unlicense",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "preprocess": "node preprocess-swagger.js",
+    "generate": "npm run preprocess && npx openapi-generator-cli generate -i ./src/processed-swagger.json -g typescript-axios -o ./src/generated --skip-validate-spec",
+    "generate:api": "rm -rf src/generated && yarn generate",
+    "dev": "tsc -w",
+    "predev": "yarn build",
+    "prebuild": "rm -rf ./dist",
+    "build": "tsc --build --verbose",
+    "force-build": "tsc --skipLibCheck --noEmitOnError",
+    "test": "jest --config jest.config.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.7"
+  },
+  "devDependencies": {
+    "@ezpg/eslint-config": "*",
+    "@ezpg/typescript-config": "*",
+    "@openapitools/openapi-generator-cli": "^2.19.1"
+  }
+}

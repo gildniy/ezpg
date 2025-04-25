@@ -1,0 +1,20 @@
+{
+  "name": "@ezpg/typescript-config",
+  "version": "0.0.1",
+  "private": true,
+  "main": "base.json",
+  "exports": {
+    "./base.json": "./base.json",
+    "./nextjs.json": "./nextjs.json",
+    "./nestjs.json": "./nestjs.json",
+    "./library.json": "./library.json",
+    "./react-library.json": "./react-library.json"
+  },
+  "files": [
+    "base.json",
+    "nextjs.json",
+    "nestjs.json",
+    "library.json",
+    "react-library.json"
+  ]
+}

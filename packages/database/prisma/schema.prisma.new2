@@ -1,0 +1,12 @@
+// Separate model to reference transactions with composite key
+model TransactionReference {
+  reference_id          Int           @id @default(autoincrement())
+  transaction_date      String        @db.VarChar(8)
+  van_id                String        @db.VarChar(1)
+  van_transaction_id    String        @db.VarChar(20)
+  created_at            DateTime      @default(now()) @db.Timestamptz(6)
+  balance_logs          BalanceLogs[]
+
+  @@unique([transaction_date, van_id, van_transaction_id], name: "transaction_references_composite_key_unique")
+  @@map("transaction_references")
+} 

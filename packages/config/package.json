@@ -1,0 +1,26 @@
+{
+  "name": "@ezpg/config",
+  "version": "1.0.0",
+  "description": "Centralized configuration package for EZPG",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint src/**/*.ts -c .eslintrc.js",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@ezpg/eslint-config": "*",
+    "joi": "^17.13.3"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^3.0.0"
+  }
+}

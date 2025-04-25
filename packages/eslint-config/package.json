@@ -1,0 +1,30 @@
+{
+  "name": "@ezpg/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "main": "config/index.js",
+  "files": [
+    "config/index.js",
+    "config/base.js",
+    "config/library.js",
+    "config/next.js"
+  ],
+  "exports": {
+    ".": "./config/index.js",
+    "./base": "./config/base.js",
+    "./library": "./config/library.js",
+    "./next": "./config/next.js"
+  },
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0"
+  },
+  "peerDependencies": {
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}

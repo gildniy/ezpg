@@ -1,0 +1,16 @@
+{
+  "extends": "@ezpg/typescript-config/nestjs.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@ezpg/*": ["../../packages/*/src", "../../packages/*/dist"],
+      "@prisma/client": ["../../packages/database/dist/generated/client"]
+    }
+  },
+  "references": [
+    { "path": "../../packages/helpers" },
+    { "path": "../../packages/types" },
+    { "path": "../../packages/database" },
+    { "path": "../../packages/config" }
+  ]
+}

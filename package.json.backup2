@@ -1,0 +1,51 @@
+{
+  "name": "ezpg",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "yarn format && lsof -t -i tcp:8080 -i tcp:3000 -i tcp:3001 -i tcp:5555 | xargs -r kill -9 ; turbo run dev",
+    "build": "turbo build",
+    "start": "turbo start",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "with-env": "dotenv -e ./apps/server/.env --",
+    "clean:dist": "turbo run clean",
+    "clean:modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "clean": "yarn clean:dist && yarn clean:modules && rm -rf .turbo",
+    "prisma:migrate:reset": "yarn with-env yarn --filter @ezpg/database run migrate:reset",
+    "prisma:generate": "cd packages/database && npx prisma generate",
+    "prisma:studio": "npx lsof -t -i tcp:5555 | xargs -r kill -9 ; yarn with-env yarn --filter @ezpg/database run studio",
+    "generate:openapi:spec": "yarn run prisma:generate && yarn with-env ts-node -r tsconfig-paths/register --project apps/server/tsconfig.json apps/server/src/generate-spec.ts"
+  },
+  "devDependencies": {
+    "@ezpg/eslint-config": "*",
+    "@ezpg/typescript-config": "*",
+    "@openapitools/openapi-generator-cli": "^2.19.1",
+    "@turbo/gen": "^1.12.4",
+    "@types/authenticator": "^1.1.4",
+    "dotenv": "^16.4.5",
+    "dotenv-cli": "^7.4.2",
+    "eslint": "^8.57.0",
+    "prettier": "^3.5.3",
+    "turbo": "^1.13.4",
+    "typescript": "5.3.3"
+  },
+  "dependencies": {
+    "@types/cookie": "^1.0.0",
+    "@typescript-eslint/eslint-plugin": "7.18.0",
+    "@typescript-eslint/parser": "7.18.0",
+    "authenticator": "^1.1.5",
+    "cookie": "^1.0.2"
+  },
+  "resolutions": {
+    "eslint": "^8.56.0"
+  },
+  "engines": {
+    "node": "^18.17.0 || >=20.0.0"
+  },
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+}
