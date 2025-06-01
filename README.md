@@ -82,7 +82,7 @@ This is a Turborepo monorepo containing:
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd ezpg-v0
+   cd ezpg
    ```
 
 2. **Install dependencies**
